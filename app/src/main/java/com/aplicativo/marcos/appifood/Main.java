@@ -26,6 +26,7 @@ public class Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity_main);
         loginButton = (LoginButton) findViewById(R.id.fb_login_bn);
         textView = (TextView) findViewById(R.id.fb_login_bn);
