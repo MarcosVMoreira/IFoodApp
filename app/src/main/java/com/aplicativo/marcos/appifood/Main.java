@@ -15,6 +15,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import java.net.MalformedURLException;
+
 public class Main extends AppCompatActivity {
 
     LoginButton loginButton;
@@ -24,6 +26,17 @@ public class Main extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+//TIRAR ISSO ###########################################################################
+        HTTPRequestTask testTask = new HTTPRequestTask();
+        testTask.execute();
+//TIRAR ISSO ###########################################################################
+
+
+
+
+
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -66,6 +79,9 @@ public class Main extends AppCompatActivity {
     }
 
     private void openActivity2() {
+
+
+
         Intent intent = new Intent(this, SecondActivity.class);
         startActivity(intent);
     }

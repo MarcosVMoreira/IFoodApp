@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +18,14 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class MapsActivity extends AppCompatActivity {
@@ -127,6 +136,9 @@ public class MapsActivity extends AppCompatActivity {
 
             placeAddress.setText(place.getAddress());
 
+            System.out.println(place.getLatLng());
+
+
 //If the user exited the dialog without selecting a place...//
 
         } else if (resultCode == RESULT_CANCELED) {
@@ -137,4 +149,8 @@ public class MapsActivity extends AppCompatActivity {
 
         }
     }
+
+
+
 }
+
