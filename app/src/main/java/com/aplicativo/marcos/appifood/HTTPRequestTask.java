@@ -1,13 +1,24 @@
 package com.aplicativo.marcos.appifood;
 
 import android.os.AsyncTask;
+import android.os.Message;
 import android.util.JsonReader;
+import android.util.JsonToken;
+import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -19,91 +30,56 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
 
-        System.out.println("entrei no método");
-// Create URL
-        URL apiEndpoint = null;
         try {
-            apiEndpoint = new URL("https://api.darksky.net/forecast/1cc7df62073be7f5c1b866e6251edcc8/-6.3771962,-36.667511");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
 
-// Create connection
-        try {
-            System.out.println("criando conexao");
-            HttpsURLConnection myConnection =
-                    (HttpsURLConnection) apiEndpoint.openConnection();
+            JSONObject jsonObject = new JSONObject();
 
+            jsonObject = getJSONObjectFromURL("https://api.darksky.net/forecast/1cc7df62073be7f5c1b866e6251edc" +
+                    "c8/-6.3771962,-36.667511");
 
-            if (myConnection.getResponseCode() == 200) {
-                System.out.println("conexao funcional");
-                // Success
-                // Further processing here
+            String myString = jsonObject.getJSONObject("currently").getString("icon");
 
-                InputStream responseBody = myConnection.getInputStream();
-
-                InputStreamReader responseBodyReader =
-                        new InputStreamReader(responseBody, "UTF-8");
-
-                JsonReader jsonReader = new JsonReader(responseBodyReader);
-
-                System.out.println("jsonReader = "+jsonReader);
-
-                jsonReader.beginObject(); // Start processing the JSON object
-                while (jsonReader.hasNext()) { // Loop through all keys
-
-
-                    String key = jsonReader.nextName(); // Fetch the next key
-
-                    System.out.println("key: "+key);
-
-
-                    if (key.equals("currently")) { // Check if desired key
-                        // Fetch the value as a String
-
-                        jsonReader.beginObject();
-
-                        while (jsonReader.hasNext()) {
-
-                            
-                            System.out.println("começou "+jsonReader+" terminou");
-
-                        }
-
-                        jsonReader.endObject();
-
-                       /* jsonReader.beginObject(); // Start processing the JSON object
-                        while (jsonReader.hasNext()) {
-                            final String innerName = jsonReader.nextName();
-                            System.out.println("passou");
-                            System.out.println("inner "+innerName);
-                            //String value = jsonReader.nextString();
-                            //System.out.println("CONDICOES DO TEMPO ATUAL: " + value);
-                        }*/
-
-
-                        // Do something with the value
-                        // ...
-
-                        break; // Break out of the loop
-                    } else {
-                        jsonReader.skipValue(); // Skip values of other keys
-                    }
-                }
-
-                jsonReader.close();
-                myConnection.disconnect();
-
-            } else {
-                // Error handling code goes here
-            }
+            System.out.println("String retornada: "+myString);
 
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
+
+
+
         return null;
+
     }
+
+    public static JSONObject getJSONObjectFromURL(String urlString) throws IOException, JSONException {
+        HttpURLConnection urlConnection = null;
+        URL url = new URL(urlString);
+        urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setReadTimeout(10000 /* milliseconds */ );
+        urlConnection.setConnectTimeout(15000 /* milliseconds */ );
+        urlConnection.setDoOutput(true);
+        urlConnection.connect();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
+        }
+        br.close();
+
+        String jsonString = sb.toString();
+        System.out.println("JSON: " + jsonString);
+
+        return new JSONObject(jsonString);
+    }
+
+
 }
 
