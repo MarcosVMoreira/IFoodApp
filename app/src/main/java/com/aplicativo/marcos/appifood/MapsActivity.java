@@ -18,23 +18,29 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 
 import javax.net.ssl.HttpsURLConnection;
 
 
-public class MapsActivity extends AppCompatActivity {
+public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.AsyncResponse {
 
     TextView placeName;
     TextView placeAddress;
     Button pickPlaceButton;
     private final static int FINE_LOCATION = 100;
     private final static int PLACE_PICKER_REQUEST = 1;
+    private LinkedList<String> latLong = new LinkedList<String>();
+    Place place;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +66,11 @@ public class MapsActivity extends AppCompatActivity {
                     Intent intent = builder.build(MapsActivity.this);
 
 //Create a PLACE_PICKER_REQUEST constant that we’ll use to obtain the selected place//]
-                    System.out.println("Deu certo o onClick");
-
 
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
                 } catch (GooglePlayServicesRepairableException e) {
-                    System.out.println("ERRO 1");
-
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
-                    System.out.println("ERRO 2");
-
                     e.printStackTrace();
                 }
 
@@ -81,15 +81,9 @@ public class MapsActivity extends AppCompatActivity {
     private void requestPermission() {
 
 //Check whether our app has the fine location permission, and request it if necessary//
-
-        System.out.println("Req permissao");
-
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            System.out.println("Permissao negada");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                System.out.println("Requisita permisssao");
 
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION);
             }
@@ -101,7 +95,6 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        System.out.println("Dentro do onRequestPermissionsResult");
         switch (requestCode) {
             case FINE_LOCATION:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
@@ -115,42 +108,61 @@ public class MapsActivity extends AppCompatActivity {
 //Retrieve the results from the place picker dialog//
 
     @Override
-
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
-        System.out.println("Dentro do onActivity. ResultCode: "+resultCode);
 
 //If the resultCode is OK...//
 
         if (resultCode == RESULT_OK) {
-            System.out.println("Dentro do resultCode");
+
 //...then retrieve the Place object, using PlacePicker.getPlace()//
 
-            Place place = PlacePicker.getPlace(this, data);
+            place = PlacePicker.getPlace(this, data);
 
 //Extract the place’s name and display it in the TextView//
 
-            placeName.setText(place.getName());
+            //placeName.setText(place.getName());
 
 //Extract the place’s address, and display it in the TextView//
 
-            placeAddress.setText(place.getAddress());
+            //placeAddress.setText(place.getAddress());
 
-            System.out.println(place.getLatLng());
+            latLong = splitaLatLng(place.getLatLng());
 
+            new HTTPRequestTask(this, latLong.get(0), latLong.get(1)).execute();
 
 //If the user exited the dialog without selecting a place...//
 
         } else if (resultCode == RESULT_CANCELED) {
 
 //...then display the following toast//
-            System.out.println("Foi cancelado");
             Toast.makeText(getApplicationContext(), "No place selected", Toast.LENGTH_LONG).show();
 
         }
     }
 
+    private LinkedList<String> splitaLatLng(LatLng latLng) {
+        LinkedList<String> lista = new LinkedList<String>();
+        String latLngString = String.valueOf(latLng);
+        String latitude;
+        String longitude;
+
+        latitude = latLngString.split("\\(")[1].split(",")[0];
+        longitude = latLngString.split("\\(")[1].split(",")[1].replace(")", "");
+
+        lista.add(latitude);
+        lista.add(longitude);
+
+        return lista;
+    }
 
 
+
+    @Override
+    public void processFinish(String output){
+        //Recebe o valor retornado da thread quando ela terminar seu processo
+        placeAddress.setText(output);
+        System.out.println("resultado aqui dentro: "+output);
+    }
 }
 

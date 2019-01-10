@@ -27,16 +27,6 @@ public class Main extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
-//TIRAR ISSO ###########################################################################
-        HTTPRequestTask testTask = new HTTPRequestTask();
-        testTask.execute();
-//TIRAR ISSO ###########################################################################
-
-
-
-
-
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
 

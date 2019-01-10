@@ -1,45 +1,60 @@
 package com.aplicativo.marcos.appifood;
 
 import android.os.AsyncTask;
-import android.os.Message;
-import android.util.JsonReader;
-import android.util.JsonToken;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
 
-public class HTTPRequestTask extends AsyncTask<Void, Void, Void> {
+public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
 
+    private String lat;
+    private String lng;
+    private String forecast = "teste";
+
+    public AsyncResponse delegate = null;
+
+    public interface AsyncResponse {
+        void processFinish(String output);
+    }
+
+
+
+    public HTTPRequestTask(AsyncResponse delegate, String lat, String lng){
+        this.delegate = delegate;
+        this.lat = lat;
+        this.lng = lng;
+    }
+
+    @Override
+    protected void onPostExecute(String o){
+        // your stuff
+        delegate.processFinish(o);
+    }
 
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected String doInBackground(Void... params) {
 
 
         try {
 
+            //Crio o objetivo JSONObject e inicializo
             JSONObject jsonObject = new JSONObject();
 
+            //Chamo a função que recebe como parâmetro o link da API e me retorna um JSONObject
             jsonObject = getJSONObjectFromURL("https://api.darksky.net/forecast/1cc7df62073be7f5c1b866e6251edc" +
-                    "c8/-6.3771962,-36.667511");
+                    "c8/"+lat+","+lng);
 
-            String myString = jsonObject.getJSONObject("currently").getString("icon");
+            //Pego o objeto JSON que corresponde a previsão do tempo no local
+            forecast = jsonObject.getJSONObject("currently").getString("icon");
 
-            System.out.println("String retornada: "+myString);
 
 
         } catch (IOException e) {
@@ -51,8 +66,12 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, Void> {
 
 
 
-        return null;
+        return forecast;
 
+    }
+
+    public String getForecast () {
+        return forecast;
     }
 
     public static JSONObject getJSONObjectFromURL(String urlString) throws IOException, JSONException {
@@ -75,7 +94,6 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, Void> {
         br.close();
 
         String jsonString = sb.toString();
-        System.out.println("JSON: " + jsonString);
 
         return new JSONObject(jsonString);
     }
