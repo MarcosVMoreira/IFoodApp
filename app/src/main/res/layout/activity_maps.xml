@@ -13,20 +13,20 @@
     tools:context=".MapsActivity">
 
     <TextView
-        android:id="@+id/placeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Place Name"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/placeAddress"
+        android:id="@+id/foodText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/placeName"
         android:text="Address"
         android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:text="Logout" />
 
     <Button
         android:id="@+id/pickPlaceButton"
