@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,7 +32,7 @@ import java.util.LinkedList;
 public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.AsyncResponse {
 
     TextView foodText;
-    Button pickPlaceButton, logoutButton;
+    CardView pickPlaceButton, logoutCard;
     private final static int FINE_LOCATION = 100;
     private final static int PLACE_PICKER_REQUEST = 1;
     private LinkedList<String> latLong = new LinkedList<String>();
@@ -52,8 +54,8 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
         requestPermission();
 
         foodText = (TextView) findViewById(R.id.foodText);
-        pickPlaceButton = (Button) findViewById(R.id.pickPlaceButton);
-        logoutButton = (Button) findViewById(R.id.logoutButton);
+        pickPlaceButton = findViewById(R.id.pickPlaceCard);
+        logoutCard = findViewById(R.id.logoutCard);
 
         pickPlaceButton.setOnClickListener(new View.OnClickListener() {
 
@@ -75,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
             }
         });
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
+        logoutCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //System.out.println("Lol");
@@ -177,14 +179,13 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
 
 
     public String userResponse (String prob, String icon) {
-        String mensage = null;
+        String mensage = null, estagioDoDia;
         Double probDouble;
         int random;
 
+        estagioDoDia = estagioDoDia();
 
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        System.out.println( "hora "+sdf.format(cal.getTime()) );
+        System.out.println("estagio do dia: "+estagioDoDia);
 
         //PAREI AQUI TENTANDO PEGAR A HORA DO COMPUTADOR
 
@@ -221,6 +222,34 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
     }
 
 
+    private String estagioDoDia () {
+        String estagioDoDia = null;
 
+        Date horarioAtual = null;
+        Calendar cal = Calendar.getInstance();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+        System.out.println("comparacao "+sdf.format(cal.getTime()).compareTo("21:30"));
+
+
+        System.out.println("horario atual "+sdf.format(cal.getTime()));
+
+        //CompareTo se for menor retorna valor menor que zero e se for maior retorna valor maior que 0.
+        //Se for igual, retorna 0
+
+
+       /* if () {
+            estagioDoDia = "manha";
+        } else if () {
+            estagioDoDia = "tarde";
+        } else if () {
+            estagioDoDia = "noite";
+        } else {
+            estagioDoDia = "madrugada";
+        }*/
+
+        return estagioDoDia;
+    }
 }
 

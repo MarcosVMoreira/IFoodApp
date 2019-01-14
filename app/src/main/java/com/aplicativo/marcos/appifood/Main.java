@@ -35,7 +35,6 @@ public class Main extends AppCompatActivity {
     LoginButton loginButton;
     TextView textView;
     CallbackManager callbackManager;
-    private Button button;
     com.facebook.AccessToken userToken;
 
 
