@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,25 +21,20 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
-
-
 
 public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.AsyncResponse {
 
     TextView foodText;
+    ImageView imageView;
     CardView pickPlaceButton, logoutCard;
     private final static int FINE_LOCATION = 100;
     private final static int PLACE_PICKER_REQUEST = 1;
     private LinkedList<String> latLong = new LinkedList<String>();
     private Place place;
     private String nomeUsuario;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +52,14 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
         pickPlaceButton = findViewById(R.id.pickPlaceCard);
         logoutCard = findViewById(R.id.logoutCard);
 
+        imageView = (ImageView) findViewById(R.id.imageView);
+
         pickPlaceButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
 
-                //código básico para montar o PlacePicker
+                //Código básico para montar o PlacePicker do Google
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
                     Intent intent = builder.build(MapsActivity.this);
@@ -80,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
         logoutCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //System.out.println("Lol");
+                //Se botão de logout for clickado, desloga
                 LoginManager.getInstance().logOut();
                 logoutRedirect();
             }
@@ -88,7 +85,7 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
     }
 
     private void requestPermission() {
-        //verifico se o app tem permissão de acesso a localização precisa. Se não, requesto.
+        //Verifico se o app tem permissão de acesso a localização precisa. Se não, requesto.
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -100,6 +97,7 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //Se não tiver permissão, eu peço permissão
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case FINE_LOCATION:
@@ -179,75 +177,117 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
 
 
     public String userResponse (String prob, String icon) {
-        String mensage = null, estagioDoDia;
+
+        String mensage = "", estagioDoDia;
         Double probDouble;
         int random;
 
+        //Busco se é manha, tarde, noite ou madrugada
         estagioDoDia = estagioDoDia();
 
-        System.out.println("estagio do dia: "+estagioDoDia);
-
-        //PAREI AQUI TENTANDO PEGAR A HORA DO COMPUTADOR
-
-        //Lógica para sugerir pizza ou sorvete
-
+        //transformo a probabilidade de chuva em double pra ficar mais fácil comparar
         probDouble = Double.parseDouble(prob);
 
-        //Caso esteja com mais de 80% de probabilidade de chuva, considero que choverá
-        if (probDouble >= 0.8) {
-            random = (int) (Math.random() * 6);
-            switch (random){
-                case 1:
-                    return "Pizza 1. "+nomeUsuario;
-                case 2:
-                    return "Pizza 2.";
-                case 3:
-                    return "Pizza 3.";
-                case 4:
-                    return "Pizza 4.";
-                case 5:
-                    return "Pizza 5.";
-                default:
-                    return "Pizza default.";
-            }
+        //verifico qual é o estágio do dia
+        if (estagioDoDia == "manha") {
+            mensage = "Eaí, "+nomeUsuario+". Bom dia. ";
+        } else if (estagioDoDia == "tarde") {
+            mensage = "Olá, "+nomeUsuario+". Boa tarde. ";
+        } else if (estagioDoDia == "noite") {
+            mensage = "Oi, "+nomeUsuario+". Como vai a noite? ";
         } else {
-           return "Sorvete.";
+            mensage ="Oi, "+nomeUsuario+". ";
         }
 
+        //Caso esteja com mais de 70% de probabilidade de chuva, considero que choverá
+        if (probDouble >= 0.7) {
+            //Se choverá, indico pizza
+
+            imageView.setImageResource(R.drawable.pizza_sem_fundo);
+
+            random = (int) (Math.random() * 5);
+
+            switch (random){
+                case 0:
+                    return mensage+"Com essa chuva, uma pizza de brocolis seria o ideal, não acha? Afinal, " +
+                            "não podemos sair da dieta, e brocolis está na dieta, não é mesmo?";
+                case 1:
+                    return mensage+"Parece que hoje vai chover. Para não pegar chuva, pede uma pizza pelo iFood!";
+                case 2:
+                    return mensage+"Chuva combina com o que? Isso mesmo: pizza. Acho que você devia pedir uma de Pepperoni, hem? Só pedir pelo iFood.";
+                case 3:
+                    return mensage+"Calabresa ou frango com catupiry, qual sabor você prefere? Hoje é dia de pizza e, se é pizza, é pelo iFood!";
+                case 4:
+                    if (estagioDoDia == "manha") {
+                        return mensage+"Que tal comer uma pizza no almoço? Com a chuva de hoje, seria uma boa pedida!";
+                    } else {
+                        return mensage+"Netflix and chill hoje a noite? Não sem antes pedir uma pizza portuguesa. O iFood tem várias" +
+                                " pizzarias a sua disposição!";
+                    }
+                default:
+                    return mensage+"Nessa chuva, que tal pedir uma pizza de bacon?";
+            }
+        } else {
+            //Caso não chova, indico sorvete/gelados
+
+            imageView.setImageResource(R.drawable.sorvete_sem_fundo);
+
+            random = (int) (Math.random() * 5);
+
+            switch (random){
+                case 0:
+                    if (icon == "clear-day") {
+                        return mensage+"Esse calor está pedindo um sorvete de creme, não é mesmo? Acho que é uma ótima pedida." +
+                                " O iFood conta com as melhores sorveterias a sua disposição!";
+                    } else if (icon == "cloudy" || icon == "partly-cloudy-day" || icon == "partly-cloudy-night") {
+                        return mensage+"Que tal uma paleta mexicana nesse tempo nublado? E não se preocupe em sair de casa: o iFood leva " +
+                                "a paleta até você!";
+                    }
+                case 1:
+                    return mensage+"Um sorvete na casquinha cairia bem hoje, não acha? Morango com creme é uma ótima combinação.";
+                case 2:
+                    return mensage+"Que tal pedir um açaí? O iFood tem várias opções para você.";
+                case 3:
+                    return mensage+"Que tal um geladinho, sacolé ou chup-chup? Não importa o nome, hoje seria uma boa pedida!";
+                case 4:
+                    if (estagioDoDia == "manha") {
+                        return mensage+"Hummmm, um sorvete cairia bem hoje, não acha? Peça um pelo iFood.";
+                    } else {
+                        return mensage+"Sorvete a noite, porque não? Nesse calor, não deixa de ser uma ótima ideia. Peça um sorvete pelo iFood" +
+                                " no conforto da sua casa!";
+                    }
+                default:
+                    return mensage+"Sem previsão de chuva para hoje. Aproveita e pede um sorvete no iFood!";
+            }
+        }
     }
 
     private void logoutRedirect() {
+        //Redireciona para o main, onde é feito o logout no início do código Main
         Intent intent = new Intent(this, Main.class);
         startActivity(intent);
     }
 
-
     private String estagioDoDia () {
         String estagioDoDia = null;
 
-        Date horarioAtual = null;
+        //pego data e horário atual
         Calendar cal = Calendar.getInstance();
 
+        //utilizo SDF para pegar o horário atual
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-        System.out.println("comparacao "+sdf.format(cal.getTime()).compareTo("21:30"));
-
-
-        System.out.println("horario atual "+sdf.format(cal.getTime()));
 
         //CompareTo se for menor retorna valor menor que zero e se for maior retorna valor maior que 0.
         //Se for igual, retorna 0
-
-
-       /* if () {
-            estagioDoDia = "manha";
-        } else if () {
-            estagioDoDia = "tarde";
-        } else if () {
-            estagioDoDia = "noite";
-        } else {
+        if ((sdf.format(cal.getTime()).compareTo("00:00") >= 0) && (sdf.format(cal.getTime()).compareTo("06:00") < 0)) {
             estagioDoDia = "madrugada";
-        }*/
+        } else if ((sdf.format(cal.getTime()).compareTo("06:00") >= 0) && (sdf.format(cal.getTime()).compareTo("12:00") < 0)) {
+            estagioDoDia = "manha";
+        } else if ((sdf.format(cal.getTime()).compareTo("12:00") >= 0) && (sdf.format(cal.getTime()).compareTo("18:00") < 0)) {
+            estagioDoDia = "tarde";
+        } else {
+            estagioDoDia = "noite";
+        }
 
         return estagioDoDia;
     }

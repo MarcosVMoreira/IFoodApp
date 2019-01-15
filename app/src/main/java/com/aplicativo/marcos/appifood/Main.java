@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,13 +20,6 @@ import com.facebook.login.widget.LoginButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class Main extends AppCompatActivity {
 
@@ -58,11 +49,9 @@ public class Main extends AppCompatActivity {
         //Prepara o botão de login do facebook
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
-
+            //Se o login for completo
             @Override
             public void onSuccess(LoginResult loginResult) {
-               /* System.out.println("acess token: " + loginResult.getAccessToken() + " LOOOOOOL " + loginResult.getAccessToken().getUserId()
-                        + " LOOOOOOL " + loginResult.getAccessToken().getToken());*/
                 userToken = loginResult.getAccessToken();
 
                 /*Faço a requisição para a Graph do facebook para coletar o nome do usuário logado pelo facebook
@@ -79,8 +68,6 @@ public class Main extends AppCompatActivity {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-
                             }
                         });
                 Bundle parameters = new Bundle();
@@ -89,11 +76,13 @@ public class Main extends AppCompatActivity {
                 request.executeAsync();
             }
 
+            //Se o login for cancelado
             @Override
             public void onCancel() {
                 Toast.makeText(getApplicationContext(), "Login cancelado", Toast.LENGTH_LONG).show();
             }
 
+            //Se houve erro no login
             @Override
             public void onError(FacebookException error) {
                 Toast.makeText(getApplicationContext(), "Houve um erro ao realizar login", Toast.LENGTH_LONG).show();
@@ -107,6 +96,7 @@ public class Main extends AppCompatActivity {
     }
 
     private void openActivity2(String nomeUsuario) {
+        //Criou um intent da segunda tela
         Intent intent = new Intent(this, MapsActivity.class);
         //Adiciono no intent o nome do usuário logado com facebook
         intent.putExtra("nome", nomeUsuario);
@@ -114,7 +104,7 @@ public class Main extends AppCompatActivity {
     }
 
     public boolean isLoggedIn() {
-        //Verifica se o usuário está logado
+        //Verifica se o usuário está logado. Se sim, retorna true
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }

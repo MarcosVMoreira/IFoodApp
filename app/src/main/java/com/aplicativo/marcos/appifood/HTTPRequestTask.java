@@ -23,11 +23,8 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
     public AsyncResponse delegate = null;
 
     public interface AsyncResponse {
-
         void processFinish(String output);
     }
-
-
 
     public HTTPRequestTask(AsyncResponse delegate, String lat, String lng){
         //construtor para receber latitude, longitude e MapsActivity
@@ -44,11 +41,9 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
         delegate.processFinish(o);
     }
 
-
     @Override
     protected String doInBackground(Void... params) {
-
-
+        //thread para não travar a GUI
         try {
 
             //Crio o objetivo JSONObject e inicializo
@@ -80,18 +75,17 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
             e.printStackTrace();
         }
 
-
         return forecast;
 
     }
 
     public static JSONObject getJSONObjectFromURL(String urlString) throws IOException, JSONException {
-        //faz a requisição a URL passada por parâmetro e retorne um objeto JSON
+        //Faz a requisição a URL passada por parâmetro e retorne um objeto JSON
         HttpURLConnection urlConnection = null;
         URL url = new URL(urlString);
         urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
-        //trabalha sempre com ms
+        //setReadTimeout e setConnectTimeout trabalham sempre com ms
         urlConnection.setReadTimeout(10000);
         urlConnection.setConnectTimeout(15000);
         urlConnection.setDoOutput(true);
@@ -107,8 +101,6 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
         br.close();
 
         String jsonString = sb.toString();
-
-        System.out.println("jsonstring: "+jsonString);
 
         return new JSONObject(jsonString);
     }
