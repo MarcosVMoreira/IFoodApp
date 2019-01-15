@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">AppIFood</string>
     <string name="facebook_app_id">129576447980596</string>
+
+    <string name="textoLinkedin">Feito por <a href="https://www.linkedin.com/in/marcosviniciusmoreira/">Marcos</a></string>
+
 </resources>

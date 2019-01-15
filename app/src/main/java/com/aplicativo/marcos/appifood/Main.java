@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,7 @@ import org.json.JSONObject;
 public class Main extends AppCompatActivity {
 
     LoginButton loginButton;
-    TextView textView;
+    TextView textView, textViewMarcos;
     CallbackManager callbackManager;
     com.facebook.AccessToken userToken;
 
@@ -38,8 +39,11 @@ public class Main extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         loginButton = (LoginButton) findViewById(R.id.fb_login_bn);
+        textViewMarcos =(TextView) findViewById(R.id.textViewMarcos);
         textView = (TextView) findViewById(R.id.textViewLogin);
         callbackManager = CallbackManager.Factory.create();
+
+        textViewMarcos.setMovementMethod(LinkMovementMethod.getInstance());
 
         //Verifica se o usuário já está logado na conta do facebook. Se estiver, deslogo o usuário
         if (isLoggedIn()) {

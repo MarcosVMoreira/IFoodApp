@@ -16,7 +16,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:gravity="center_horizontal|bottom"
-        android:text="Feito por Marcos (colocar link aqui)"
+        android:text="@string/textoLinkedin"
+        android:layout_marginBottom="40dp"
         android:textColor="#ffffff"
         android:textStyle="bold" />
 
