@@ -113,7 +113,4 @@ public class Main extends AppCompatActivity {
         return accessToken != null;
     }
 
-
-
-
 }

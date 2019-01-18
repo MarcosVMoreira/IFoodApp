@@ -1,6 +1,8 @@
 package com.aplicativo.marcos.appifood;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
@@ -43,9 +47,9 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... params) {
+        Context contexto = getApplicationContext();
         //thread para não travar a GUI
         try {
-
             //Crio o objetivo JSONObject e inicializo
             JSONObject jsonObject = new JSONObject();
 
@@ -70,9 +74,9 @@ public class HTTPRequestTask extends AsyncTask<Void, Void, String> {
             forecast = probability+":"+icon;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            return "erro api";
         } catch (JSONException e) {
-            e.printStackTrace();
+            return "erro json";
         }
 
         return forecast;

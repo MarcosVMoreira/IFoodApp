@@ -67,8 +67,12 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
+                    //caso Google Play Services não esteja instalado, atualizado ou ativo
+                    Toast.makeText(getApplicationContext(), "Erro ao conectar ao Google Places", Toast.LENGTH_LONG).show();
+                    ////e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Google Places está atualmente indisponivel", Toast.LENGTH_LONG).show();
+                    //e.printStackTrace();
                 }
 
             }
@@ -87,7 +91,6 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
     private void requestPermission() {
         //Verifico se o app tem permissão de acesso a localização precisa. Se não, requesto.
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION);
             }
@@ -163,16 +166,26 @@ public class MapsActivity extends AppCompatActivity implements HTTPRequestTask.A
 
     @Override
     public void processFinish(String output){
+        /*Se for retornada a expressão "erro api", quer dizer que não consegui estabelecer conexão com a mesma
+          pode ser problema da API estar indisponível ou o dispositivo estar sem conexão com internet*/
+        if (output.equals("erro api")) {
+            Toast.makeText(getApplicationContext(), "Erro ao fazer requisição à API. Verifique conexão com internet.", Toast.LENGTH_LONG).show();
+        } else if (output.equals("erro json")) {
+            //
+            Toast.makeText(getApplicationContext(), "Erro ao fazer conversão JSON", Toast.LENGTH_LONG).show();
+        } else {
+            //Recebe o valor retornado da thread quando ela termina o processo de consulta a API
+            String icon;
+            String prob;
 
-        //Recebe o valor retornado da thread quando ela termina o processo de consulta a API
-        String icon;
-        String prob;
+            //Divido novamente a prob e icon que vieram concatenados da thread
+            prob = output.split(":")[0];
+            icon = output.split(":")[1];
 
-        //Divido novamente a prob e icon que vieram concatenados da thread
-        prob = output.split(":")[0];
-        icon = output.split(":")[1];
+            foodText.setText(userResponse(prob, icon));
+        }
 
-        foodText.setText(userResponse(prob, icon));
+
     }
 
 
